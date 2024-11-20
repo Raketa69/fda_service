@@ -14,6 +14,7 @@ class Database extends Model
     public $table = "databases";
 
     protected $fillable = [
+        "connection_name",
         "driver",
         "host",
         "port",

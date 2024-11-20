@@ -15,5 +15,6 @@ class Algorithm extends Model
 
     protected $fillable = [
         "name",
+        "path",
     ];
 }
