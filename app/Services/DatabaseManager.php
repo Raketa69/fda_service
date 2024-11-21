@@ -12,7 +12,7 @@ use Illuminate\Database\Connection;
 
 class DatabaseManager
 {
-    public function addDatabaseConnection(DatabaseConnectionDTO $dto): void
+    public function addDatabaseConnection(DatabaseConnectionDTO $dto): string
     {
         Database::create([
             'connection_name' => $dto->connection_name,
@@ -23,7 +23,7 @@ class DatabaseManager
             'username'        => $dto->username,
             'password'        => $dto->password,
         ]);
-        
+
         Config::set("database.connections.$dto->connection_name", value: [
             'driver'   => $dto->driver,
             'host'     => $dto->host,
@@ -32,17 +32,14 @@ class DatabaseManager
             'username' => $dto->username,
             'password' => $dto->password,
         ]);
+
+        return $dto->connection_name;
     }
 
     public function deleteDatabaseConnection(string $connection_name): void
     {
-        $database = Database::where("connection_name", "connection_name")->firstOrFail();
+        $database = Database::where("connection_name", $connection_name)->firstOrFail();
 
         $database->deleteOrFail();
-    }
-
-    public function getDatabaseConnection(string $connection_name): Connection
-    {
-       return DB::connection($connection_name);
     }
 }
