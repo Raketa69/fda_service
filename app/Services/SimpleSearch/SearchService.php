@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\SimpleSearch;
 
+use App\Services\DatabaseHelper;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
-class SimpleSearch
+class SearchService
 {
     private Connection $connection;
 

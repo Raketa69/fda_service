@@ -3,9 +3,10 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use App\DTO\DatabaseConnectionDTO;
-use App\Services\DatabaseHelper;
+use App\Services\AnalyzeService;
 use App\Services\DatabaseManager;
-use App\Services\SimpleSearch;
+use App\Services\SimpleSearch\SearchService;
+
 /*
 |--------------------------------------------------------------------------
 | Console Routes
@@ -39,6 +40,10 @@ Artisan::command('start', function () {
 
 
 
-    $ss = new SimpleSearch();
-    dd($ss->findFunctionalDependencies($connection));
+    $ss = new SearchService();
+    $dependecies = $ss->findFunctionalDependencies($connection);
+
+    //TODO: delete timestamps
+    $as = (new AnalyzeService($connection))->analyzeNormalForms($dependecies);
+    dd($as);
 });
