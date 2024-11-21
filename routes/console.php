@@ -2,7 +2,10 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-
+use App\DTO\DatabaseConnectionDTO;
+use App\Services\DatabaseHelper;
+use App\Services\DatabaseManager;
+use App\Services\SimpleSearch;
 /*
 |--------------------------------------------------------------------------
 | Console Routes
@@ -17,3 +20,25 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+Artisan::command('start', function () {
+
+    $dto = new DatabaseConnectionDTO();
+
+    $dto->connection_name = "dvdrental";
+    $dto->driver = "pgsql";
+    $dto->host = "pgsql";
+    $dto->port = 5432;
+    $dto->database = "dvdrental";
+    $dto->username = "root";
+    $dto->password = "secret";
+
+    $dbmanager = new DatabaseManager();
+    $dbmanager->addDatabaseConnection($dto);
+    $connection = $dbmanager->getDatabaseConnection("dvdrental");
+
+
+
+    $ss = new SimpleSearch();
+    dd($ss->findFunctionalDependencies($connection));
+});

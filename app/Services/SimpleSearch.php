@@ -4,21 +4,37 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 
 class SimpleSearch
 {
+    private Connection $connection;
 
-    public function findFunctionalDependencies(string $tableName)
+    public function findFunctionalDependencies(Connection $connection): array
     {
-        
-    }
+        $result = [];
+        $this->connection = $connection;
 
+        $tables = (new DatabaseHelper($connection))->getDatabaseTables();
+
+        foreach ($tables as $table) {
+            $result[] = $this->findFunctionalDependenciesInTable($table);
+        }
+
+        return $result;
+    }
 
     public function findFunctionalDependenciesInTable(string $tableName)
     {
-        $columns = DB::select("SHOW COLUMNS FROM $tableName");
-        $columns = array_column($columns, 'Field');
+        // Получаем список столбцов таблицы из information_schema.columns
+        $columns = DB::connection($this->connection->getName())
+            ->table('information_schema.columns')
+            ->select('column_name')
+            ->where('table_name', $tableName)
+            ->where('table_schema', 'public') // Задаем схему, если нужно
+            ->pluck('column_name')
+            ->toArray();
 
         if (empty($columns)) {
             return response()->json(['message' => "Таблица $tableName не содержит столбцов."], 400);
@@ -42,22 +58,24 @@ class SimpleSearch
             }
         }
 
-        return response()->json([
+        return [
             'table' => $tableName,
             'dependencies' => $dependencies
-        ]);
+        ];
     }
 
     private function checkDependency(string $tableName, string $determinant, string $dependent): bool
     {
         // Подсчитываем количество уникальных комбинаций determinant -> dependent
-        $groupedCount = DB::table($tableName)
+        $groupedCount = DB::connection($this->connection->getName())
+            ->table($tableName)
             ->selectRaw("$determinant, $dependent")
             ->groupBy($determinant, $dependent)
             ->count();
 
         // Подсчитываем количество уникальных значений determinant
-        $determinantCount = DB::table($tableName)
+        $determinantCount = DB::connection($this->connection->getName())
+            ->table($tableName)
             ->selectRaw($determinant)
             ->groupBy($determinant)
             ->count();

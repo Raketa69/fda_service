@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('databases', function (Blueprint $table) {
             $table->id();
+            $table->string(column: 'connection_name');
             $table->string('driver');
             $table->string('host');
             $table->string('port');

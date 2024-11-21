@@ -6,9 +6,9 @@ namespace App\Services;
 
 use App\DTO\DatabaseConnectionDTO;
 use App\Models\Database;
+use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Connection;
 
 class DatabaseManager
 {
@@ -19,7 +19,7 @@ class DatabaseManager
             'driver'          => $dto->driver,
             'host'            => $dto->host,
             'port'            => $dto->port,
-            'database'        => $dto->database,
+            'name'            => $dto->database,
             'username'        => $dto->username,
             'password'        => $dto->password,
         ]);
@@ -34,6 +34,11 @@ class DatabaseManager
         ]);
 
         return $dto->connection_name;
+    }
+
+    public function getDatabaseConnection(string $connection_name): Connection
+    {
+        return DB::connection($connection_name);
     }
 
     public function deleteDatabaseConnection(string $connection_name): void

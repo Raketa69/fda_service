@@ -7,25 +7,20 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Connection;
 
-class DatabaseConnection
+class DatabaseHelper
 {
-    private Connection $connection;
-
-    public function setConnection(string $connection_name): Connection
-    {
-        $this->connection = DB::connection($connection_name);
-
-        return $this->connection;
-    }
+    public function __construct(
+        private Connection $connection
+    ) {}
 
     public function getDatabaseTables(): array
     {
-        if(!isset($this->connection))
-        {
+        if (!isset($this->connection)) {
             throw new \Exception("Connection is not set.");
         }
 
-        $tables = $this->connection->table('information_schema.tables')
+        $tables = DB::connection($this->connection->getName())
+            ->table('information_schema.tables')
             ->select('table_name')
             ->where('table_schema', 'public')
             ->get();
