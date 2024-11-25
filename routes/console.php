@@ -43,7 +43,14 @@ Artisan::command('start', function () {
     $ss = new SearchService();
     $dependecies = $ss->findFunctionalDependencies($connection);
 
-    //TODO: delete timestamps
-    $as = (new AnalyzeService($connection))->analyzeNormalForms($dependecies);
-    dd($as);
+    $as = (new AnalyzeService($connection));
+    $violations = $as->analyzeNormalForms($dependecies);
+
+
+    $result = [];
+    foreach ($violations as $value) {
+        $result[] = $as->analyzeDependencies($value["dependencies"], $value['table']);
+    }
+
+    dd(...$result);
 });

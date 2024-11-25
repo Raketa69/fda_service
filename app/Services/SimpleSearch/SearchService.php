@@ -35,7 +35,11 @@ class SearchService
             ->where('table_name', $tableName)
             ->where('table_schema', 'public') // Задаем схему, если нужно
             ->pluck('column_name')
+            ->filter(function ($value) {
+                return !in_array($value, ['createdAt', 'last_update', 'create_date', 'updatedAt', 'cteated_at', 'updated_at']);
+            })
             ->toArray();
+
 
         if (empty($columns)) {
             return response()->json(['message' => "Таблица $tableName не содержит столбцов."], 400);
@@ -72,6 +76,7 @@ class SearchService
             ->table($tableName)
             ->selectRaw("$determinant, $dependent")
             ->groupBy($determinant, $dependent)
+
             ->count();
 
         // Подсчитываем количество уникальных значений determinant
@@ -82,6 +87,16 @@ class SearchService
             ->count();
 
         // Проверяем, совпадает ли количество групп
-        return $groupedCount === $determinantCount;
+        if ($groupedCount === $determinantCount) {
+            return true;
+        } else {
+
+            return $this->calculateInaccuracy($groupedCount, $determinantCount) > 0.1;
+        }
+    }
+
+    private function calculateInaccuracy(int|float $grouped, int|float $determinant): float
+    {
+        return ($grouped) / (($determinant ** 2) - $determinant);
     }
 }
