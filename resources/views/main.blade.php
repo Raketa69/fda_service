@@ -115,6 +115,10 @@
         }
 
         .actionable-item {
+            margin-top: 100px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 50px;
             display: none;
             margin-top: 10px;
             padding: 10px;
@@ -123,8 +127,8 @@
             background-color: #fff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             position: relative;
-            margin: auto;
             width: 70%;
+            height: 100%;
         }
 
         .dropdown ul {
@@ -166,13 +170,14 @@
         }
 
         .actionable-panel {
+            padding-top: 25px;
             margin-top: 25px;
             margin-left: auto;
             margin-right: auto;
             border-radius: 20px;
             background-color: #f7f7f7;
-            width: 90%;
-            height: 50%;
+            width: 97%;
+            height: 65%;
         }
 
         .setConfig {
@@ -192,6 +197,32 @@
         .connectDb-form div {
             width: 100%;
             margin: 10px;
+        }
+
+        .spinner {
+            width: 200px;
+            height: 200px;
+            border: 5px solid #ccc;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .analyzeDatabase {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -219,16 +250,18 @@
             <div class="button-grid">
                 <button class="button select-database" onclick="toggleDropdown()">Select Database</button>
                 <button class="button connect-database" onclick="connectDb()">Set Database Connection</button>
-                <button class="button upload-file">Upload File for Database</button>
-                <button class="button analyze-database">Analyze Database</button>
-                <button class="button get-results">Get Results</button>
-                <button class="button search-dependencies">Search Dependencies</button>
-                <button class="button download-results">Download results</button>
+                <button class="button upload-file" onclick="uploadDatabase()">Upload File for Database</button>
+                <button class="button analyze-database" onclick="analyzeDatabase()">Analyze Database</button>
+                <button class="button get-results" onclick="getResults()">Get Results</button>
+                <button class="button search-dependencies" onclick="search()">Search Dependencies</button>
+                <button class="button download-results" onclick="download()">Download results</button>
                 <button class="button set-config" onclick="setConfig()">Set configs</button>
             </div>
 
             <div class="actionable-panel">
+
                 <div class="dropdown actionable-item" id="databaseDropdown">
+                    <p>Select database: </p>
                     <ul>
                         @foreach ($databases as $database)
                         <li class="dropdown-item" onclick="selectDatabase(this)">{{ $database }}</li>
@@ -251,8 +284,9 @@
                     </div>
                 </div>
 
-                <div class="connectDb actionable-item" id="connectDb">
+                <div class="dropdown connectDb actionable-item" id="connectDb">
 
+                    <p>Fill in the form to save the settings and connect to the database server:</p>
                     <form class="connectDb-form">
 
                         <p>Database</p>
@@ -294,11 +328,40 @@
                             <input id="password" type="text">
                         </div>
 
+
+                        <div>
+                            <input id="button-add-database" title="Add" type="button">
+                        </div>
+                        
                     </form>
+                </div>
+
+                <div class="dropdown actionable-item" id="uploadDatabase">
+                    <p>Select a file in CSV format to load the database:</p>
+                    <form action="">
+                        <label for="file">Choose file: </label>
+                        <input id="file" type="file">
+                        <input type="button">
+                    </form>
+                </div>
+                <div class="dropdown actionable-item analyzeDatabase" id="analyzeDatabase">
+                    <div class="spinner"></div>
+
+                </div>
+                <div class="dropdown actionable-item" id="results">
+                    getResults
+
+                </div>
+                <div class="dropdown actionable-item" id="search">
+                    search
+
+                </div>
+                <div class="dropdown actionable-item" id="download">
+                    download
+
                 </div>
             </div>
         </div>
-
     </div>
 
     <footer>
@@ -342,7 +405,6 @@
         }
     </script>
 
-
     <script>
         function connectDb() {
 
@@ -355,6 +417,69 @@
         }
     </script>
 
+    <script>
+        function uploadDatabase() {
+
+            const element = document.getElementById('uploadDatabase');
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+
+    <script>
+        function analyzeDatabase() {
+
+            const element = document.getElementById('analyzeDatabase');
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+
+    <script>
+        function getResults() {
+
+            const element = document.getElementById('results');
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+
+    <script>
+        function search() {
+
+            const element = document.getElementById('search');
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+
+    <script>
+        function download() {
+
+            const element = document.getElementById('download');
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+
+
+
+    <!-- -------------------------------------------------------------------------------------------------- -->
     <script>
         function selectDatabase(element) {
 
@@ -373,6 +498,7 @@
         }
     </script>
 
+    <!-- -------------------------------------------------------------------------------------------------- -->
 
 </body>
 

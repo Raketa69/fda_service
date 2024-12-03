@@ -38,13 +38,14 @@ Artisan::command('start', function () {
     $dbmanager->addDatabaseConnection($dto);
     $connection = $dbmanager->getDatabaseConnection("dvdrental");
 
-
-
     $ss = new SearchService();
     $dependecies = $ss->findFunctionalDependencies($connection);
 
+    // dd($dependecies);
+
     $as = (new AnalyzeService($connection));
     $violations = $as->analyzeNormalForms($dependecies);
+
 
 
     $result = [];
