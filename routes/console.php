@@ -38,20 +38,22 @@ Artisan::command('start', function () {
     $dbmanager->addDatabaseConnection($dto);
     $connection = $dbmanager->getDatabaseConnection("dvdrental");
 
-    $ss = new SearchService();
-    $dependecies = $ss->findFunctionalDependencies($connection);
+    // $ss = new SearchService();
+    // $dependecies = $ss->findFunctionalDependencies($connection);
 
-    // dd($dependecies);
+    // // dd($dependecies);
 
     $as = (new AnalyzeService($connection));
-    $violations = $as->analyzeNormalForms($dependecies);
+    // $violations = $as->analyzeNormalForms($dependecies);
 
 
 
-    $result = [];
-    foreach ($violations as $value) {
-        $result[] = $as->analyzeDependencies($value["dependencies"], $value['table']);
-    }
+    // $result = [];
+    // foreach ($violations as $value) {
+    //     $result[] = $as->analyzeDependencies($value["dependencies"], $value['table']);
+    // }
 
-    dd(...$result);
+    //dd(...$result);
+
+
 });

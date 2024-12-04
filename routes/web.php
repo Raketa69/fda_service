@@ -21,3 +21,5 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', [Controller::class, 'getMainPage']);
+Route::get('/analyze', [Controller::class, 'analyze']);
+

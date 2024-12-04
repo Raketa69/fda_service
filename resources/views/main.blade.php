@@ -27,10 +27,10 @@
 
         .container {
             width: 100%;
-            height: 100vh;
+            /* height: 100vh; */
             display: flex;
             flex-direction: row;
-            align-items: center;
+            align-items: top;
             margin: 20px auto;
             max-width: 1800px;
             text-align: center;
@@ -79,7 +79,7 @@
             color: white;
         }
 
-        .get-results {
+        .get- {
             background-color: #DC3545;
             color: white;
         }
@@ -89,12 +89,13 @@
             color: white;
         }
 
-        .download-results {
+        .download- {
             background-color: yellow;
             color: black;
         }
 
         footer {
+            bottom: 0;
             margin-top: 30px;
             background-color: #007BFF;
             color: white;
@@ -127,7 +128,7 @@
             background-color: #fff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             position: relative;
-            width: 70%;
+            width: 100%;
             height: 100%;
         }
 
@@ -159,8 +160,8 @@
 
         .main-panel {
             width: 80%;
-            height: 100vh;
-            margin: 10px;
+            /* height: 100vh; */
+            /* margin: 10px; */
             background-color: #e6e6e6;
             border-radius: 20px;
         }
@@ -176,8 +177,8 @@
             margin-right: auto;
             border-radius: 20px;
             background-color: #f7f7f7;
-            width: 97%;
-            height: 65%;
+            /* width: 97%; */
+            /* min-height: 65%; */
         }
 
         .setConfig {
@@ -206,7 +207,7 @@
             border-top: 5px solid #007bff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            position: relative;
+            /* position: relative; */
         }
 
         @keyframes spin {
@@ -220,9 +221,45 @@
         }
 
         .analyzeDatabase {
-            display: flex;
+            /* display: flex; */
             justify-content: center;
             align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f1f9ff;
+        }
+
+        caption {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
@@ -332,7 +369,7 @@
                         <div>
                             <input id="button-add-database" title="Add" type="button">
                         </div>
-                        
+
                     </form>
                 </div>
 
@@ -349,7 +386,55 @@
 
                 </div>
                 <div class="dropdown actionable-item" id="results">
-                    getResults
+                    get results
+
+                    <table>
+                        <caption>Data Overview</caption>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Column Count</th>
+                                <th>Dead Rows Estimate</th>
+                                <th>Foreign Key Count</th>
+                                <th>Index Scans</th>
+                                <th>Live Rows Estimate</th>
+                                <th>Primary Key Count</th>
+                                <th>Schema Name</th>
+                                <th>Sequential Scans</th>
+                                <th>Table Name</th>
+                                <th>Table Size (Bytes)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Пример данных, которые замените на ваши -->
+                            <tr>
+                                <td>1</td>
+                                <td>5</td>
+                                <td>100</td>
+                                <td>3</td>
+                                <td>50</td>
+                                <td>200</td>
+                                <td>1</td>
+                                <td>public</td>
+                                <td>20</td>
+                                <td>users</td>
+                                <td>204800</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>8</td>
+                                <td>50</td>
+                                <td>1</td>
+                                <td>10</td>
+                                <td>150</td>
+                                <td>1</td>
+                                <td>public</td>
+                                <td>15</td>
+                                <td>orders</td>
+                                <td>102400</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                 </div>
                 <div class="dropdown actionable-item" id="search">
@@ -442,6 +527,55 @@
     </script>
 
     <script>
+        async function fillInData() {
+            const result = []
+            const url = "http://localhost/analyze";
+
+            try {
+                const response = await (await fetch(url, {
+                    method: "GET"
+                })).json()
+
+                console.log(response)
+
+                const targetElement = document.querySelector('tbody');
+
+                const result2 = response.map((element, index) => {
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${element.column_count}</td>
+                            <td>${element.dead_rows_estimate}</td>
+                            <td>${element.foreign_key_count}</td>
+                            <td>${element.index_scans}</td>
+                            <td>${element.live_rows_estimate}</td>
+                            <td>${element.primary_key_count}</td>
+                            <td>${element.schema_name}</td>
+                            <td>${element.sequential_scans}</td>
+                            <td>${element.table_name}</td>
+                            <td>${element.table_size_bytes}</td>
+                        </tr>
+                    `;
+
+                    targetElement.innerHTML += row;
+                })
+
+                console.log(result2);
+
+
+                targetElement.insertAdjacentHTML('afterend', result2);
+
+
+
+
+
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+
+        fillInData()
+
         function getResults() {
 
             const element = document.getElementById('results');

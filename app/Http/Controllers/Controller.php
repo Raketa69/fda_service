@@ -6,8 +6,10 @@ namespace App\Http\Controllers;
 
 use App\DTO\DatabaseConnectionDTO;
 use App\Services\AlgorithmService;
+use App\Services\AnalyzeService;
 use App\Services\DatabaseManager;
 use App\Services\DatabaseService;
+use Illuminate\Database\Connection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
@@ -17,10 +19,32 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function __construct(
-        private DatabaseService $databaseService,
-        private AlgorithmService $algorithmService
-    ) {}
+    private AnalyzeService $analyzeService;
+    public  Connection $connection;
+    private DatabaseService $databaseService;
+    private AlgorithmService $algorithmService;
+
+    public function __construct()
+    {
+        $dto = new DatabaseConnectionDTO();
+
+        $dto->connection_name = "dvdrental";
+        $dto->driver = "pgsql";
+        $dto->host = "pgsql";
+        $dto->port = 5432;
+        $dto->database = "dvdrental";
+        $dto->username = "root";
+        $dto->password = "secret";
+
+        $dbmanager = new DatabaseManager();
+        $dbmanager->addDatabaseConnection($dto);
+
+        $this->connection = $dbmanager->getDatabaseConnection("dvdrental");
+
+        $this->databaseService = new DatabaseService();
+        $this->algorithmService = new AlgorithmService();
+        $this->analyzeService = new AnalyzeService($this->connection);
+    }
 
     public function getMainPage(): View
     {
@@ -32,7 +56,6 @@ class Controller extends BaseController
 
     public function addDatabaseConnection($request): mixed
     {
-
         $dto = new DatabaseConnectionDTO();
 
         $dto->connection_name = $request->connection_name;
@@ -54,9 +77,11 @@ class Controller extends BaseController
         return response("ok", 200);
     }
 
-    public function analyze($request): mixed
+    public function analyze(): mixed
     {
-        return response("ok", 200);
+        $data = $this->analyzeService->getMainAnalytic($this->connection);
+
+        return response($data, 200);
     }
 
     public function results($request): mixed
